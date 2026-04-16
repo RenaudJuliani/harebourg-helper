@@ -14,7 +14,10 @@ export function reverseSolve(
 ): RedirectionResult {
   const aim = rotateCellAround(source, target, inverseRotation(rotation));
   if (!isInside(aim, map)) return { kind: 'blocked', reason: 'out_of_map' };
-  if (map.cells[aim.y][aim.x] === 'obstacle') return { kind: 'blocked', reason: 'no_solution' };
+  const aimKind = map.cells[aim.y][aim.x];
+  if (aimKind === 'obstacle' || aimKind === 'hole') {
+    return { kind: 'blocked', reason: 'no_solution' };
+  }
   if (!hasLineOfSight(source, aim, map)) return { kind: 'blocked', reason: 'los' };
   return { kind: 'ok', aimCell: aim, impactCell: target };
 }

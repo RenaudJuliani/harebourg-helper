@@ -5,9 +5,9 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "fs:allow-app-write",
-    "fs:allow-app-read",
-    "fs:allow-mkdir",
+    "fs:allow-appconfig-read-recursive",
+    "fs:allow-appconfig-write-recursive",
+    "fs:allow-appconfig-meta-recursive",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
     "global-shortcut:allow-is-registered"

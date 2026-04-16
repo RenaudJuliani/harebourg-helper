@@ -10,6 +10,12 @@ function makeMap(w: number, h: number, obstacles: Array<[number, number]> = []):
   return m;
 }
 
+function makeMapWithHole(w: number, h: number, holes: Array<[number, number]>): GameMap {
+  const m = makeMap(w, h);
+  for (const [x, y] of holes) m.cells[y][x] = 'hole';
+  return m;
+}
+
 const cw = (d: 0 | 90 | 180 | 270): Rotation => ({ degrees: d, direction: 'cw' });
 
 describe('reverseSolve', () => {
@@ -28,6 +34,13 @@ describe('reverseSolve', () => {
     // aim = rotate target by inverse cw 90 = ccw 90 around source. target (0,2), source (0,0). ccw 90: (dx,dy)->(dy,-dx). (0,2) -> (2,0). aim=(2,0). In map.
     expect(r.kind).toBe('ok');
     if (r.kind === 'ok') expect(r.aimCell).toEqual({ x: 2, y: 0 });
+  });
+
+  it('aim on a hole is blocked (not a valid aim cell)', () => {
+    // source (2,2), target (2,4), rot cw 90 -> aim (4,2). Make (4,2) a hole.
+    const map = makeMapWithHole(10, 10, [[4, 2]]);
+    const r = reverseSolve({ x: 2, y: 2 }, { x: 2, y: 4 }, cw(90), map);
+    expect(r).toEqual({ kind: 'blocked', reason: 'no_solution' });
   });
 
   it('LOS blocked to aim returns los', () => {
