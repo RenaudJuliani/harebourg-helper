@@ -3,6 +3,7 @@ import type { Cell } from '../../core/types';
 import { useAppStore } from '../../state/store';
 import { EntityLayer } from './EntityLayer';
 import { MapLayer } from './MapLayer';
+import { OverlayLayer } from './OverlayLayer';
 import { TILE_H, TILE_W, cartesianToIso } from './iso';
 
 export function GridView() {
@@ -56,6 +57,7 @@ export function GridView() {
         onCellHover={setHover}
       />
       <EntityLayer />
+      <OverlayLayer />
       <title>{hover ? `(${hover.x}, ${hover.y})` : ''}</title>
     </svg>
   );
