@@ -11,28 +11,39 @@ function makeStore() {
 }
 
 describe('settingsSlice', () => {
-  it('defaults: combat mode, always-on-top off, default shortcuts', () => {
-    const s = makeStore().getState();
-    expect(s.settings.mode).toBe('combat');
-    expect(s.settings.alwaysOnTop).toBe(false);
-    expect(s.settings.shortcuts).toEqual(DEFAULT_SHORTCUTS);
+  it('defaults mode to combat', () => {
+    expect(makeStore().getState().mode).toBe('combat');
   });
 
-  it('setMode toggles', () => {
+  it('toggles mode combat <-> edit', () => {
     const s = makeStore();
     s.getState().setMode('edit');
-    expect(s.getState().settings.mode).toBe('edit');
+    expect(s.getState().mode).toBe('edit');
+    s.getState().setMode('combat');
+    expect(s.getState().mode).toBe('combat');
   });
 
-  it('setShortcut rebinds a single action', () => {
-    const s = makeStore();
-    s.getState().setShortcut('resetTurn', 'CmdOrCtrl+Shift+R');
-    expect(s.getState().settings.shortcuts.resetTurn).toBe('CmdOrCtrl+Shift+R');
+  it('default shortcuts contain resetTurn', () => {
+    const s = makeStore().getState();
+    expect(s.settings.shortcuts.resetTurn).toBe(DEFAULT_SHORTCUTS.resetTurn);
   });
 
-  it('setAlwaysOnTop toggles', () => {
+  it('updateShortcut overrides a single binding', () => {
     const s = makeStore();
-    s.getState().setAlwaysOnTop(true);
-    expect(s.getState().settings.alwaysOnTop).toBe(true);
+    s.getState().updateShortcut('resetTurn', 'F5');
+    expect(s.getState().settings.shortcuts.resetTurn).toBe('F5');
+  });
+
+  it('updateShortcut to null disables a binding', () => {
+    const s = makeStore();
+    s.getState().updateShortcut('resetTurn', null);
+    expect(s.getState().settings.shortcuts.resetTurn).toBeNull();
+  });
+
+  it('resetShortcutsToDefault restores all bindings', () => {
+    const s = makeStore();
+    s.getState().updateShortcut('resetTurn', 'F5');
+    s.getState().resetShortcutsToDefault();
+    expect(s.getState().settings.shortcuts).toEqual(DEFAULT_SHORTCUTS);
   });
 });

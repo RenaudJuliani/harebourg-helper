@@ -9,9 +9,9 @@ export type ShortcutAction =
   | 'incrementMeleeHits'
   | 'decrementMeleeHits';
 
-export type Shortcuts = Record<ShortcutAction, string>;
+export type ShortcutBindings = Record<ShortcutAction, string | null>;
 
-export const DEFAULT_SHORTCUTS: Shortcuts = {
+export const DEFAULT_SHORTCUTS: ShortcutBindings = {
   resetTurn: 'CmdOrCtrl+R',
   toggleMode: 'CmdOrCtrl+E',
   swapPositions: 'CmdOrCtrl+S',
@@ -20,25 +20,29 @@ export const DEFAULT_SHORTCUTS: Shortcuts = {
   decrementMeleeHits: 'CmdOrCtrl+Shift+H',
 };
 
-export type Settings = {
-  mode: AppMode;
+export type AppSettings = {
+  shortcuts: ShortcutBindings;
   alwaysOnTop: boolean;
-  shortcuts: Shortcuts;
 };
 
 export type SettingsSlice = {
-  settings: Settings;
+  mode: AppMode;
+  settings: AppSettings;
   setMode: (mode: AppMode) => void;
-  setAlwaysOnTop: (on: boolean) => void;
-  setShortcut: (action: ShortcutAction, accelerator: string) => void;
+  updateShortcut: (action: ShortcutAction, binding: string | null) => void;
+  resetShortcutsToDefault: () => void;
+  setAlwaysOnTop: (v: boolean) => void;
 };
 
 export const createSettingsSlice: StateCreator<SettingsSlice, [], [], SettingsSlice> = (set) => ({
-  settings: { mode: 'combat', alwaysOnTop: false, shortcuts: { ...DEFAULT_SHORTCUTS } },
-  setMode: (mode) => set((s) => ({ settings: { ...s.settings, mode } })),
-  setAlwaysOnTop: (on) => set((s) => ({ settings: { ...s.settings, alwaysOnTop: on } })),
-  setShortcut: (action, accelerator) =>
+  mode: 'combat',
+  settings: { shortcuts: { ...DEFAULT_SHORTCUTS }, alwaysOnTop: false },
+  setMode: (mode) => set({ mode }),
+  updateShortcut: (action, binding) =>
     set((s) => ({
-      settings: { ...s.settings, shortcuts: { ...s.settings.shortcuts, [action]: accelerator } },
+      settings: { ...s.settings, shortcuts: { ...s.settings.shortcuts, [action]: binding } },
     })),
+  resetShortcutsToDefault: () =>
+    set((s) => ({ settings: { ...s.settings, shortcuts: { ...DEFAULT_SHORTCUTS } } })),
+  setAlwaysOnTop: (v) => set((s) => ({ settings: { ...s.settings, alwaysOnTop: v } })),
 });
