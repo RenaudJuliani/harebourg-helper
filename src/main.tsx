@@ -1,10 +1,22 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
 import App from './App';
+import './index.css';
+import { hydrateFromDisk, installAutoSave } from './services/persistence.init';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-);
+async function bootstrap() {
+  try {
+    await hydrateFromDisk();
+  } catch (e) {
+    console.warn('hydration failed', e);
+  }
+  installAutoSave();
+
+  createRoot(document.getElementById('root') as HTMLElement).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
+}
+
+void bootstrap();
