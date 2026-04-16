@@ -1,8 +1,10 @@
-import { selectConfusion } from '../../state/selectors';
+import { useMemo } from 'react';
+import { computeConfusion } from '../../core/confusion';
 import { useAppStore } from '../../state/store';
 
 export function ConfusionDisplay() {
-  const r = useAppStore(selectConfusion);
+  const turn = useAppStore((s) => s.turn);
+  const r = useMemo(() => computeConfusion(turn), [turn]);
   const arrow = r.direction === 'cw' ? '⟳' : '⟲';
   return (
     <div>

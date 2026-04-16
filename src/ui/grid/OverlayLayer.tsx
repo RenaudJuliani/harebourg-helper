@@ -1,4 +1,6 @@
-import { selectReverseResult } from '../../state/selectors';
+import { useMemo } from 'react';
+import { computeConfusion } from '../../core/confusion';
+import { reverseSolve } from '../../core/solver';
 import { useAppStore } from '../../state/store';
 import { theme } from '../theme';
 import { TILE_H, TILE_W, cartesianToIso } from './iso';
@@ -11,7 +13,14 @@ function diamond(px: number, py: number): string {
 
 export function OverlayLayer() {
   const target = useAppStore((s) => s.turn.targetCell);
-  const result = useAppStore(selectReverseResult);
+  const me = useAppStore((s) => s.entities.find((e) => e.kind === 'me'));
+  const turn = useAppStore((s) => s.turn);
+  const map = useAppStore((s) => s.map);
+
+  const result = useMemo(() => {
+    if (!me || !target) return null;
+    return reverseSolve(me.cell, target, computeConfusion(turn), map);
+  }, [me, target, turn, map]);
 
   return (
     <g pointerEvents="none">
