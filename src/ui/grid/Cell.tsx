@@ -7,7 +7,7 @@ type Props = {
   px: number;
   py: number;
   kind: CellKind;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
   onContextMenu?: (e: React.MouseEvent) => void;
   onMouseEnter?: () => void;
 };

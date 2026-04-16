@@ -3,7 +3,7 @@ import { Cell } from './Cell';
 import { cartesianToIso } from './iso';
 
 type Props = {
-  onCellClick: (cell: { x: number; y: number }) => void;
+  onCellClick: (cell: { x: number; y: number }, e: React.MouseEvent) => void;
   onCellRightClick: (cell: { x: number; y: number }) => void;
   onCellHover: (cell: { x: number; y: number }) => void;
 };
@@ -20,7 +20,7 @@ export function MapLayer({ onCellClick, onCellRightClick, onCellHover }: Props) 
           px={px}
           py={py}
           kind={map.cells[y][x]}
-          onClick={() => onCellClick({ x, y })}
+          onClick={(e) => onCellClick({ x, y }, e)}
           onContextMenu={(e) => {
             e.preventDefault();
             onCellRightClick({ x, y });

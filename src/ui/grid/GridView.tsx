@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Cell } from '../../core/types';
 import { useAppStore } from '../../state/store';
+import { EntityLayer } from './EntityLayer';
 import { MapLayer } from './MapLayer';
 import { TILE_H, TILE_W, cartesianToIso } from './iso';
 
@@ -28,10 +29,12 @@ export function GridView() {
     };
   }, [map.width, map.height]);
 
-  const onCellClick = (cell: Cell) => {
+  const onCellClick = (cell: Cell, e: React.MouseEvent) => {
     if (mode === 'edit') {
       const current = map.cells[cell.y][cell.x];
       setCellKind(cell, current === 'obstacle' ? 'floor' : 'obstacle');
+    } else if (e.shiftKey) {
+      placeEntity('meStart', cell);
     } else {
       placeEntity('me', cell);
     }
@@ -52,6 +55,7 @@ export function GridView() {
         onCellRightClick={onCellRightClick}
         onCellHover={setHover}
       />
+      <EntityLayer />
       <title>{hover ? `(${hover.x}, ${hover.y})` : ''}</title>
     </svg>
   );
