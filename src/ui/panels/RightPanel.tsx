@@ -1,5 +1,6 @@
 import type { EntityKind } from '../../core/types';
 import { useAppStore } from '../../state/store';
+import { SettingsButton } from '../app/SettingsButton';
 import { EntityPalette } from './EntityPalette';
 
 type Props = {
@@ -54,6 +55,9 @@ export function RightPanel({ paletteKind, onPaletteChange }: Props) {
           </button>
         </>
       )}
+      <div style={{ marginTop: 'auto' }}>
+        <SettingsButton />
+      </div>
     </aside>
   );
 }
