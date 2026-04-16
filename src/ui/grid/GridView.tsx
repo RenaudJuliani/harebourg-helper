@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react';
-import type { Cell } from '../../core/types';
+import type { Cell, EntityKind } from '../../core/types';
 import { useAppStore } from '../../state/store';
 import { EntityLayer } from './EntityLayer';
 import { MapLayer } from './MapLayer';
 import { OverlayLayer } from './OverlayLayer';
 import { TILE_H, TILE_W, cartesianToIso } from './iso';
 
-export function GridView() {
+type Props = { paletteKind: EntityKind };
+
+export function GridView({ paletteKind }: Props) {
   const map = useAppStore((s) => s.map);
   const mode = useAppStore((s) => s.mode);
   const placeEntity = useAppStore((s) => s.placeEntity);
@@ -48,12 +50,16 @@ export function GridView() {
       setTargetCell(cell);
     }
   };
+  const onCellMiddleClick = (cell: Cell) => {
+    if (mode === 'combat') placeEntity(paletteKind, cell);
+  };
 
   return (
     <svg viewBox={viewBox} width="100%" height="100%" style={{ display: 'block' }}>
       <MapLayer
         onCellClick={onCellClick}
         onCellRightClick={onCellRightClick}
+        onCellMiddleClick={onCellMiddleClick}
         onCellHover={setHover}
       />
       <EntityLayer />

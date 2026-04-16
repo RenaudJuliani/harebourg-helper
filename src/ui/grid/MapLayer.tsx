@@ -5,10 +5,11 @@ import { cartesianToIso } from './iso';
 type Props = {
   onCellClick: (cell: { x: number; y: number }, e: React.MouseEvent) => void;
   onCellRightClick: (cell: { x: number; y: number }) => void;
+  onCellMiddleClick: (cell: { x: number; y: number }) => void;
   onCellHover: (cell: { x: number; y: number }) => void;
 };
 
-export function MapLayer({ onCellClick, onCellRightClick, onCellHover }: Props) {
+export function MapLayer({ onCellClick, onCellRightClick, onCellMiddleClick, onCellHover }: Props) {
   const map = useAppStore((s) => s.map);
   const nodes = [];
   for (let y = 0; y < map.height; y++) {
@@ -24,6 +25,12 @@ export function MapLayer({ onCellClick, onCellRightClick, onCellHover }: Props) 
           onContextMenu={(e) => {
             e.preventDefault();
             onCellRightClick({ x, y });
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 1) {
+              e.preventDefault();
+              onCellMiddleClick({ x, y });
+            }
           }}
           onMouseEnter={() => onCellHover({ x, y })}
         />,

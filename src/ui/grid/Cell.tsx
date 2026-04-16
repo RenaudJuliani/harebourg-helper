@@ -9,6 +9,7 @@ type Props = {
   kind: CellKind;
   onClick?: (e: React.MouseEvent) => void;
   onContextMenu?: (e: React.MouseEvent) => void;
+  onMouseDown?: (e: React.MouseEvent) => void;
   onMouseEnter?: () => void;
 };
 
@@ -23,7 +24,7 @@ function fillFor(kind: CellKind): string {
   }
 }
 
-function CellImpl({ px, py, kind, onClick, onContextMenu, onMouseEnter }: Props) {
+function CellImpl({ px, py, kind, onClick, onContextMenu, onMouseDown, onMouseEnter }: Props) {
   const hx = TILE_W / 2;
   const hy = TILE_H / 2;
   const points = `${px},${py - hy} ${px + hx},${py} ${px},${py + hy} ${px - hx},${py}`;
@@ -38,6 +39,7 @@ function CellImpl({ px, py, kind, onClick, onContextMenu, onMouseEnter }: Props)
       style={{ cursor: blocking ? 'not-allowed' : 'pointer' }}
       onClick={onClick}
       onContextMenu={onContextMenu}
+      onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
     />
   );
