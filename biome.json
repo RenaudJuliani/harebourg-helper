@@ -16,8 +16,13 @@
     "lineWidth": 100
   },
   "javascript": { "formatter": { "quoteStyle": "single", "semicolons": "always" } },
-  "json": { "parser": { "allowComments": true } },
   "files": {
     "ignore": ["dist", "node_modules", "src-tauri/target", "src-tauri/gen"]
-  }
+  },
+  "overrides": [
+    {
+      "include": ["tsconfig.app.json", "tsconfig.node.json"],
+      "json": { "parser": { "allowComments": true } }
+    }
+  ]
 }
