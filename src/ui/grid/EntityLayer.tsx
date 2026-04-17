@@ -2,14 +2,14 @@ import { memo } from 'react';
 import type { Entity, EntityKind } from '../../core/types';
 import { useAppStore } from '../../state/store';
 import { theme } from '../theme';
-import { cartesianToIso } from './iso';
+import { TILE_H, TILE_W, cartesianToIso } from './iso';
 
 function colorFor(kind: EntityKind): string {
   switch (kind) {
     case 'me':
       return theme.me;
     case 'meStart':
-      return theme.meStart;
+      return theme.me;
     case 'harebourg':
       return theme.harebourg;
     case 'ally':
@@ -34,7 +34,32 @@ function labelFor(kind: EntityKind): string {
   }
 }
 
-const Marker = memo(function Marker({ entity }: { entity: Entity }) {
+function diamond(px: number, py: number): string {
+  const hx = TILE_W / 2;
+  const hy = TILE_H / 2;
+  return `${px},${py - hy} ${px + hx},${py} ${px},${py + hy} ${px - hx},${py}`;
+}
+
+const CellMarker = memo(function CellMarker({ entity }: { entity: Entity }) {
+  const { px, py } = cartesianToIso(entity.cell);
+  const opacity = entity.kind === 'meStart' ? 0.35 : 0.85;
+  return (
+    <g pointerEvents="none">
+      <polygon
+        points={diamond(px, py)}
+        fill={colorFor(entity.kind)}
+        fillOpacity={opacity}
+        stroke={colorFor(entity.kind)}
+        strokeWidth={1.5}
+      />
+      <text x={px} y={py + 4} textAnchor="middle" fontSize={12} fontWeight={700} fill="#0e1116">
+        {labelFor(entity.kind)}
+      </text>
+    </g>
+  );
+});
+
+const CircleMarker = memo(function CircleMarker({ entity }: { entity: Entity }) {
   const { px, py } = cartesianToIso(entity.cell);
   const removeEntity = useAppStore((s) => s.removeEntity);
   return (
@@ -69,9 +94,13 @@ export function EntityLayer() {
   const entities = useAppStore((s) => s.entities);
   return (
     <g>
-      {entities.map((e) => (
-        <Marker key={e.id} entity={e} />
-      ))}
+      {entities.map((e) =>
+        e.kind === 'me' || e.kind === 'meStart' ? (
+          <CellMarker key={e.id} entity={e} />
+        ) : (
+          <CircleMarker key={e.id} entity={e} />
+        ),
+      )}
     </g>
   );
 }

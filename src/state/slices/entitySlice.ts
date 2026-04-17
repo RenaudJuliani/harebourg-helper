@@ -6,6 +6,7 @@ export type EntitySlice = {
   entities: Entity[];
   placeEntity: (kind: EntityKind, cell: Cell) => void;
   removeEntity: (id: string) => void;
+  clearAllEntities: () => void;
 };
 
 const UNIQUE: ReadonlySet<EntityKind> = new Set(['me', 'meStart', 'harebourg']);
@@ -29,4 +30,5 @@ export const createEntitySlice: StateCreator<EntitySlice & Requires, [], [], Ent
       return { entities: [...filtered, { id: nextId(), kind, cell }] };
     }),
   removeEntity: (id) => set((state) => ({ entities: state.entities.filter((e) => e.id !== id) })),
+  clearAllEntities: () => set({ entities: [] }),
 });

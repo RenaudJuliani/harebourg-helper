@@ -11,6 +11,7 @@ type Props = {
 export function RightPanel({ paletteKind, onPaletteChange }: Props) {
   const resetTurn = useAppStore((s) => s.resetTurn);
   const resetMapToDefault = useAppStore((s) => s.resetMapToDefault);
+  const clearAllEntities = useAppStore((s) => s.clearAllEntities);
   const mode = useAppStore((s) => s.mode);
   return (
     <aside
@@ -29,6 +30,9 @@ export function RightPanel({ paletteKind, onPaletteChange }: Props) {
           <button type="button" onClick={resetTurn}>
             Reset tour
           </button>
+          <button type="button" onClick={clearAllEntities}>
+            Reset positions
+          </button>
           <div style={{ fontSize: 11, opacity: 0.7, lineHeight: 1.5 }}>
             Clic gauche : moi (tir)
             <br />
@@ -36,7 +40,7 @@ export function RightPanel({ paletteKind, onPaletteChange }: Props) {
             <br />
             Clic droit : cible
             <br />
-            Clic milieu : entité sélectionnée
+            Alt+clic (ou clic milieu) : entité sélectionnée
             <br />
             Double-clic entité : supprimer
           </div>

@@ -36,6 +36,8 @@ export function GridView({ paletteKind }: Props) {
     if (mode === 'edit') {
       const current = map.cells[cell.y][cell.x];
       setCellKind(cell, current === 'obstacle' ? 'floor' : 'obstacle');
+    } else if (e.altKey) {
+      placeEntity(paletteKind, cell);
     } else if (e.shiftKey) {
       placeEntity('meStart', cell);
     } else {
