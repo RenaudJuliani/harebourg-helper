@@ -65,7 +65,7 @@ export function GridView({ paletteKind }: Props) {
         onCellHover={setHover}
       />
       <EntityLayer />
-      <OverlayLayer />
+      <OverlayLayer hover={hover} />
       <title>{hover ? `(${hover.x}, ${hover.y})` : ''}</title>
     </svg>
   );
