@@ -269,20 +269,24 @@ pub struct DetectedEntity {
 }
 ```
 
-**Nouveau slice Redux** (`src/state/slices/detectionSlice.ts`) :
+**Nouveau slice Zustand** (`src/state/slices/detectionSlice.ts`) — le store existant utilise Zustand, pas Redux. On ajoute un slice avec la même structure que `entitySlice.ts`, `mapSlice.ts`, etc. :
 ```ts
-type DetectionState = {
-  status: 'idle' | 'detecting' | 'success' | 'error';
-  lastResult: DetectionResult | null;
-  error: DetectionErrorKind | null;
+export type DetectionSlice = {
+  detectionStatus: 'idle' | 'detecting' | 'success' | 'error';
+  lastDetection: DetectionResult | null;
+  detectionError: DetectionErrorKind | null;
+  runDetection: () => Promise<void>;       // thunk-equivalent : invoke Tauri + update state
+  clearDetectionError: () => void;
 };
 ```
 
-**Actions et flux :**
-- `detectionStarted()` — le UI passe en loading
-- `entitiesReplaced(entities)` — remplace toutes les entités "moi/allié/ennemi/harebourg" dans `entitySlice`, `me` est mis à `null`
-- `detectionSucceeded(result)` — stocke le résultat (notamment les confidences) pour affichage
-- `detectionFailed(error)` — stocke l'erreur, déclenche le toast
+**Flux de `runDetection()` :**
+1. Set `detectionStatus = 'detecting'`
+2. `invoke('detect_entities')` via `@tauri-apps/api/core`
+3. Sur succès : appeler `entitiesReplaced(result.entities)` (ajouté à `entitySlice`), set `lastDetection`, set `detectionStatus = 'success'`
+4. Sur échec : set `detectionError`, set `detectionStatus = 'error'`
+
+**Modification de `entitySlice`** : ajouter une action `entitiesReplaced(detectedEntities)` qui wipe toutes les entités puis les remplace par les nouvelles avec `me` à `null`.
 
 **Breaking change sur `EntityKind` :**
 - **Avant** : `'me' | 'meStart' | 'harebourg' | 'ally' | 'neutral'`
