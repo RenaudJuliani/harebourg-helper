@@ -12,12 +12,12 @@ export type ShortcutAction =
 export type ShortcutBindings = Record<ShortcutAction, string | null>;
 
 export const DEFAULT_SHORTCUTS: ShortcutBindings = {
-  resetTurn: 'F5',
-  toggleMode: 'F2',
-  swapPositions: 'F3',
-  cycleHpRangeDown: 'F6',
-  incrementMeleeHits: 'F7',
-  decrementMeleeHits: 'F8',
+  resetTurn: 'r',
+  toggleMode: 'e',
+  swapPositions: 's',
+  cycleHpRangeDown: 'd',
+  incrementMeleeHits: 'z',
+  decrementMeleeHits: 'x',
 };
 
 export type AppSettings = {
