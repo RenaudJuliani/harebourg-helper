@@ -1,4 +1,3 @@
-import { isRegistered, register, unregister } from '@tauri-apps/plugin-global-shortcut';
 import type { ShortcutAction } from '../state/slices/settingsSlice';
 import { useAppStore } from '../state/store';
 
@@ -36,35 +35,45 @@ const HANDLERS: Record<ShortcutAction, () => void> = {
   },
 };
 
-const registered = new Map<ShortcutAction, string>();
-
-async function bindOne(action: ShortcutAction, key: string) {
-  try {
-    if (await isRegistered(key)) await unregister(key);
-    await register(key, () => HANDLERS[action]());
-    registered.set(action, key);
-  } catch (e) {
-    console.warn('failed to bind', action, key, e);
-  }
-}
-
-export async function bindAll() {
+function keyToAction(e: KeyboardEvent): ShortcutAction | null {
   const bindings = useAppStore.getState().settings.shortcuts;
-  for (const action of Object.keys(HANDLERS) as ShortcutAction[]) {
-    const key = bindings[action];
-    if (key) await bindOne(action, key);
+  for (const [action, key] of Object.entries(bindings)) {
+    if (!key) continue;
+    if (matchKey(e, key)) return action as ShortcutAction;
   }
+  return null;
 }
 
-export async function rebind(action: ShortcutAction, key: string | null) {
-  const prev = registered.get(action);
-  if (prev) {
-    try {
-      await unregister(prev);
-    } catch {
-      /* noop */
-    }
-    registered.delete(action);
-  }
-  if (key) await bindOne(action, key);
+function matchKey(e: KeyboardEvent, binding: string): boolean {
+  const parts = binding.toLowerCase().split('+');
+  const key = parts.pop()!;
+  const needCtrl = parts.includes('ctrl') || parts.includes('cmdorctrl');
+  const needShift = parts.includes('shift');
+  const needAlt = parts.includes('alt');
+
+  if (needCtrl !== (e.ctrlKey || e.metaKey)) return false;
+  if (needShift !== e.shiftKey) return false;
+  if (needAlt !== e.altKey) return false;
+
+  return e.key.toLowerCase() === key || e.code.toLowerCase() === key;
+}
+
+function onKeyDown(e: KeyboardEvent) {
+  const action = keyToAction(e);
+  if (!action) return;
+  e.preventDefault();
+  HANDLERS[action]();
+}
+
+let installed = false;
+
+export function installShortcuts() {
+  if (installed) return;
+  installed = true;
+  window.addEventListener('keydown', onKeyDown);
+}
+
+export function uninstallShortcuts() {
+  installed = false;
+  window.removeEventListener('keydown', onKeyDown);
 }

@@ -7,9 +7,6 @@
     "core:default",
     "fs:allow-appconfig-read-recursive",
     "fs:allow-appconfig-write-recursive",
-    "fs:allow-appconfig-meta-recursive",
-    "global-shortcut:allow-register",
-    "global-shortcut:allow-unregister",
-    "global-shortcut:allow-is-registered"
+    "fs:allow-appconfig-meta-recursive"
   ]
 }

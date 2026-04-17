@@ -12,11 +12,7 @@ async function bootstrap() {
     console.warn('hydration failed', e);
   }
   installAutoSave();
-  try {
-    await installShortcuts();
-  } catch (e) {
-    console.warn('shortcuts install failed', e);
-  }
+  installShortcuts();
 
   createRoot(document.getElementById('root') as HTMLElement).render(
     <StrictMode>
