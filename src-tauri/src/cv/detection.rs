@@ -2,7 +2,18 @@ use crate::capture::CapturedImage;
 use crate::cv::calibration::GridTransform;
 use crate::cv::hsv::{rgb_to_hsv, HsvRange};
 use crate::cv::reference::*;
+use image::RgbImage;
+use once_cell::sync::Lazy;
 use serde::Serialize;
+
+static HAREBOURG_TEMPLATE: Lazy<RgbImage> = Lazy::new(|| {
+    let bytes = include_bytes!("../../assets/harebourg-template.png");
+    image::load_from_memory(bytes)
+        .expect("load harebourg template")
+        .to_rgb8()
+});
+
+pub const HAREBOURG_THRESHOLD: f32 = 0.70;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -94,6 +105,67 @@ pub fn classify_ring(
         Some((Team::Ally, blue))
     } else {
         None
+    }
+}
+
+/// Normalized cross-correlation score between an image window and the Harebourg template.
+/// Returns a score in [0, 1] where 1 is a perfect match.
+pub fn match_harebourg_at(
+    image: &CapturedImage,
+    center_x: f32,
+    center_y: f32,
+    tile_w: f32,
+) -> f32 {
+    let template = &*HAREBOURG_TEMPLATE;
+    let tw = template.width() as f32;
+    let th = template.height() as f32;
+
+    let scale = tile_w / REF_TILE_W;
+    let scaled_w = (tw * scale).max(1.0) as u32;
+    let scaled_h = (th * scale).max(1.0) as u32;
+
+    let sx = (center_x - scaled_w as f32 / 2.0).max(0.0) as u32;
+    let sy = (center_y - scaled_h as f32 * 1.2).max(0.0) as u32;
+    if sx + scaled_w >= image.width || sy + scaled_h >= image.height {
+        return 0.0;
+    }
+
+    let mut sum_xy = 0.0_f64;
+    let mut sum_x = 0.0_f64;
+    let mut sum_y = 0.0_f64;
+    let mut sum_xx = 0.0_f64;
+    let mut sum_yy = 0.0_f64;
+    let n = (scaled_w * scaled_h) as f64;
+
+    for py in 0..scaled_h {
+        for px in 0..scaled_w {
+            let tx = ((px as f32 / scale) as u32).min(template.width() - 1);
+            let ty = ((py as f32 / scale) as u32).min(template.height() - 1);
+            let tpx = template.get_pixel(tx, ty);
+            let t_gray = (tpx[0] as f64 + tpx[1] as f64 + tpx[2] as f64) / 3.0;
+
+            let ix = sx + px;
+            let iy = sy + py;
+            let i = ((iy * image.width + ix) * 4) as usize;
+            let i_gray = (image.pixels[i] as f64
+                + image.pixels[i + 1] as f64
+                + image.pixels[i + 2] as f64)
+                / 3.0;
+
+            sum_xy += t_gray * i_gray;
+            sum_x += t_gray;
+            sum_y += i_gray;
+            sum_xx += t_gray * t_gray;
+            sum_yy += i_gray * i_gray;
+        }
+    }
+
+    let num = n * sum_xy - sum_x * sum_y;
+    let den = ((n * sum_xx - sum_x * sum_x) * (n * sum_yy - sum_y * sum_y)).sqrt();
+    if den == 0.0 {
+        0.0
+    } else {
+        (num / den).clamp(0.0, 1.0) as f32
     }
 }
 
