@@ -4,6 +4,7 @@ import { GridView } from '../grid/GridView';
 import { LeftPanel } from '../panels/LeftPanel';
 import { RightPanel } from '../panels/RightPanel';
 import { MeBanner } from './MeBanner';
+import { ToastStack } from './Toast';
 
 export function AppShell() {
   const [paletteKind, setPaletteKind] = useState<EntityKind>('harebourg');
@@ -17,6 +18,7 @@ export function AppShell() {
         </div>
       </div>
       <RightPanel paletteKind={paletteKind} onPaletteChange={setPaletteKind} />
+      <ToastStack />
     </div>
   );
 }

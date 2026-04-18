@@ -3,9 +3,15 @@ import { type DetectionSlice, createDetectionSlice } from './slices/detectionSli
 import { type EntitySlice, createEntitySlice } from './slices/entitySlice';
 import { type MapSlice, createMapSlice } from './slices/mapSlice';
 import { type SettingsSlice, createSettingsSlice } from './slices/settingsSlice';
+import { type ToastSlice, createToastSlice } from './slices/toastSlice';
 import { type TurnSlice, createTurnSlice } from './slices/turnSlice';
 
-export type AppStore = MapSlice & EntitySlice & TurnSlice & SettingsSlice & DetectionSlice;
+export type AppStore = MapSlice &
+  EntitySlice &
+  TurnSlice &
+  SettingsSlice &
+  DetectionSlice &
+  ToastSlice;
 
 export const useAppStore = create<AppStore>()((...a) => ({
   ...createMapSlice(...a),
@@ -13,4 +19,5 @@ export const useAppStore = create<AppStore>()((...a) => ({
   ...createTurnSlice(...a),
   ...createSettingsSlice(...a),
   ...createDetectionSlice(...a),
+  ...createToastSlice(...a),
 }));
