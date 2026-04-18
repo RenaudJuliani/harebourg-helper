@@ -3,6 +3,7 @@ use crate::cv::calibration::{calibrate, CalibrationError};
 use crate::cv::detection::{
     classify_ring, match_harebourg_at, DetectedEntity, DetectedKind, Team, HAREBOURG_THRESHOLD,
 };
+use crate::cv::map_data::PLAYABLE_CELLS;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
@@ -18,16 +19,9 @@ pub struct DetectionResult {
     pub warnings: Vec<String>,
 }
 
-/// Playable floor cells of the Harebourg arena.
-/// Temporary naive version; Task 4.5 replaces this with the real map data.
-pub fn playable_cells() -> Vec<(i32, i32)> {
-    let mut cells = Vec::new();
-    for y in 0..20 {
-        for x in 0..20 {
-            cells.push((x, y));
-        }
-    }
-    cells
+/// Playable floor cells of the Harebourg arena (sourced from `map_data`).
+pub fn playable_cells() -> &'static [(i32, i32)] {
+    PLAYABLE_CELLS
 }
 
 pub fn detect() -> Result<DetectionResult, PipelineError> {
@@ -41,7 +35,7 @@ pub fn detect_on_image(image: &CapturedImage) -> Result<DetectionResult, Pipelin
     let mut entities = Vec::new();
     let warnings = Vec::new();
 
-    for (x, y) in playable_cells() {
+    for &(x, y) in playable_cells() {
         let Some((team, ring_quality)) = classify_ring(image, &transform, x, y) else {
             continue;
         };
