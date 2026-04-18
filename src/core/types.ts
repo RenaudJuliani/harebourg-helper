@@ -37,3 +37,32 @@ export type RedirectionResult =
   | { kind: 'blocked'; reason: 'los' | 'out_of_map' | 'no_solution' };
 
 export type AppMode = 'combat' | 'edit';
+
+export type DetectedTeam = 'ally' | 'enemy';
+export type DetectedKind = 'generic' | 'harebourg';
+
+export type DetectedEntity = {
+  cell: Cell;
+  team: DetectedTeam;
+  kind: DetectedKind;
+  confidence: number;
+};
+
+export type DetectionResult = {
+  entities: DetectedEntity[];
+  warnings: string[];
+};
+
+export type DetectionErrorKind =
+  | 'WindowNotFound'
+  | 'WindowMinimized'
+  | 'PermissionDenied'
+  | 'CaptureFailed'
+  | 'NotInCombat'
+  | 'UnexpectedShape'
+  | 'Unknown';
+
+export type DetectionError = {
+  kind: DetectionErrorKind;
+  detail?: string;
+};
