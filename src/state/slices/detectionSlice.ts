@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import type { DetectedEntity, DetectionError, DetectionResult } from '../../core/types';
+import type { Cell, DetectedEntity, DetectionError, DetectionResult } from '../../core/types';
 import { invokeDetectEntities } from '../../services/detection';
 
 export type DetectionStatus = 'idle' | 'detecting' | 'success' | 'error';
@@ -10,6 +10,7 @@ export type DetectionSlice = {
   detectionError: DetectionError | null;
   runDetection: () => Promise<void>;
   clearDetectionError: () => void;
+  confirmEntityDetection: (cell: Cell) => void;
 };
 
 type Requires = {
@@ -26,6 +27,17 @@ export const createDetectionSlice: StateCreator<
   lastDetection: null,
   detectionError: null,
   clearDetectionError: () => set({ detectionError: null, detectionStatus: 'idle' }),
+  confirmEntityDetection: (cell) =>
+    set((s) => ({
+      lastDetection: s.lastDetection
+        ? {
+            ...s.lastDetection,
+            entities: s.lastDetection.entities.filter(
+              (e) => !(e.cell.x === cell.x && e.cell.y === cell.y),
+            ),
+          }
+        : null,
+    })),
   runDetection: async () => {
     set({ detectionStatus: 'detecting', detectionError: null });
     try {
