@@ -117,6 +117,56 @@ pub fn largest_blob_bbox(mask: &[bool], width: u32, height: u32) -> Option<Bbox>
         .and_then(|(root, _)| bboxes.get(&root).copied())
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct GridTransform {
+    pub origin_x: f32,
+    pub origin_y: f32,
+    pub tile_w: f32,
+    pub tile_h: f32,
+}
+
+impl GridTransform {
+    pub fn cell_to_pixel(&self, x: i32, y: i32) -> (f32, f32) {
+        let px = self.origin_x + (x - y) as f32 * self.tile_w / 2.0;
+        let py = self.origin_y + (x + y) as f32 * self.tile_h / 2.0;
+        (px, py)
+    }
+
+    pub fn pixel_to_cell(&self, px: f32, py: f32) -> (i32, i32) {
+        let dx = px - self.origin_x;
+        let dy = py - self.origin_y;
+        let fx = dx / self.tile_w + dy / self.tile_h;
+        let fy = dy / self.tile_h - dx / self.tile_w;
+        (fx.round() as i32, fy.round() as i32)
+    }
+}
+
+pub fn calibrate(image: &CapturedImage) -> Result<GridTransform, CalibrationError> {
+    let mask = build_tile_mask(image);
+    let bbox = largest_blob_bbox(&mask, image.width, image.height)
+        .ok_or(CalibrationError::NotInCombat)?;
+
+    let total_pixels = (image.width * image.height) as f32;
+    let blob_pixels = mask.iter().filter(|b| **b).count() as f32;
+    if blob_pixels / total_pixels < 0.05 {
+        return Err(CalibrationError::NotInCombat);
+    }
+
+    let ratio = bbox.width() as f32 / bbox.height().max(1) as f32;
+    if !(1.6..=2.2).contains(&ratio) {
+        return Err(CalibrationError::UnexpectedShape);
+    }
+
+    let scale = bbox.width() as f32 / ref_bbox_width();
+    let tile_w = REF_TILE_W * scale;
+    let tile_h = tile_w / 2.0;
+
+    let origin_x = bbox.min_x as f32 + (REF_ORIGIN_X - REF_BBOX_MIN_X) * scale;
+    let origin_y = bbox.min_y as f32 + (REF_ORIGIN_Y - REF_BBOX_MIN_Y) * scale;
+
+    Ok(GridTransform { origin_x, origin_y, tile_w, tile_h })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -154,5 +204,17 @@ mod tests {
         let bbox = largest_blob_bbox(&mask, 10, 10).unwrap();
         assert_eq!(bbox.min_x, 5);
         assert_eq!(bbox.max_x, 8);
+    }
+
+    #[test]
+    fn roundtrip_cell_to_pixel_to_cell() {
+        let t = GridTransform { origin_x: 500.0, origin_y: 200.0, tile_w: 80.0, tile_h: 40.0 };
+        for x in 0..20 {
+            for y in 0..20 {
+                let (px, py) = t.cell_to_pixel(x, y);
+                let (rx, ry) = t.pixel_to_cell(px, py);
+                assert_eq!((rx, ry), (x, y), "roundtrip failed at ({x},{y})");
+            }
+        }
     }
 }
