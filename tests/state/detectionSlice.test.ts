@@ -12,14 +12,16 @@ import {
 } from '../../src/state/slices/detectionSlice';
 import { type EntitySlice, createEntitySlice } from '../../src/state/slices/entitySlice';
 import { type MapSlice, createMapSlice } from '../../src/state/slices/mapSlice';
+import { type ToastSlice, createToastSlice } from '../../src/state/slices/toastSlice';
 
-type Combined = MapSlice & EntitySlice & DetectionSlice;
+type Combined = MapSlice & EntitySlice & DetectionSlice & ToastSlice;
 
 function makeStore() {
   return create<Combined>()((...a) => ({
     ...createMapSlice(...a),
     ...createEntitySlice(...a),
     ...createDetectionSlice(...a),
+    ...createToastSlice(...a),
   }));
 }
 
