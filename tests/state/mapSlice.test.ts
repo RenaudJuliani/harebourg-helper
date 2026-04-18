@@ -9,14 +9,14 @@ function makeStore() {
 describe('mapSlice', () => {
   it('initializes with the Harebourg preset', () => {
     const s = makeStore().getState();
-    expect(s.map.id).toBe('harebourg-v1');
+    expect(s.map.id).toBe('harebourg-v2');
     expect(s.map.width).toBeGreaterThan(0);
   });
 
   it('setCellKind updates a cell', () => {
     const s = makeStore();
-    s.getState().setCellKind({ x: 1, y: 1 }, 'obstacle');
-    expect(s.getState().map.cells[1][1]).toBe('obstacle');
+    s.getState().setCellKind({ x: 8, y: 5 }, 'obstacle');
+    expect(s.getState().map.cells[5][8]).toBe('obstacle');
   });
 
   it('setCellKind ignores out-of-bounds', () => {
@@ -28,9 +28,9 @@ describe('mapSlice', () => {
 
   it('resetMapToDefault restores the preset', () => {
     const s = makeStore();
-    s.getState().setCellKind({ x: 1, y: 1 }, 'obstacle');
+    s.getState().setCellKind({ x: 8, y: 5 }, 'obstacle');
     s.getState().resetMapToDefault();
-    const original = s.getState().map.cells[1][1];
+    const original = s.getState().map.cells[5][8];
     expect(original).toBe('floor');
   });
 });
