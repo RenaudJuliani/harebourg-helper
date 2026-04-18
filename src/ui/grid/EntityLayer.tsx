@@ -103,12 +103,19 @@ const CircleMarker = memo(function CircleMarker({ entity }: { entity: Entity }) 
   const { px, py } = cartesianToIso(entity.cell);
   const removeEntity = useAppStore((s) => s.removeEntity);
   const confirmEntityDetection = useAppStore((s) => s.confirmEntityDetection);
+  const designateMe = useAppStore((s) => s.designateMe);
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: SVG entity marker, non-focusable by design
     <g
       onClick={(e) => {
         if (e.shiftKey) return;
         e.stopPropagation();
+        const state = useAppStore.getState();
+        const meMissing = !state.entities.some((x) => x.kind === 'me');
+        if (entity.kind === 'ally' && state.lastDetection && meMissing) {
+          designateMe(entity.id);
+          return;
+        }
         confirmEntityDetection(entity.cell);
       }}
       onDoubleClick={(e) => {

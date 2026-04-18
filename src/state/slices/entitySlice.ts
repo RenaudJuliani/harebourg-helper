@@ -8,6 +8,7 @@ export type EntitySlice = {
   removeEntity: (id: string) => void;
   clearAllEntities: () => void;
   entitiesReplaced: (detected: DetectedEntity[]) => void;
+  designateMe: (entityId: string) => void;
 };
 
 const UNIQUE: ReadonlySet<EntityKind> = new Set(['me', 'harebourg']);
@@ -44,5 +45,11 @@ export const createEntitySlice: StateCreator<EntitySlice & Requires, [], [], Ent
         kind: detectedKindToEntityKind(d),
         cell: d.cell,
       })),
+    })),
+  designateMe: (entityId) =>
+    set((state) => ({
+      entities: state.entities
+        .filter((e) => e.kind !== 'me')
+        .map((e) => (e.id === entityId ? { ...e, kind: 'me' as const } : e)),
     })),
 });
