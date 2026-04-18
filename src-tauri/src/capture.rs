@@ -40,9 +40,13 @@ pub fn capture_dofus_window() -> Result<CapturedImage, CaptureError> {
         return Err(CaptureError::WindowMinimized);
     }
 
+    // Logical width for retina scale computation (XCapResult<u32> in 0.9.4)
+    let logical_width = dofus.width().unwrap_or(1).max(1) as f32;
+
     let img = dofus.capture_image().map_err(classify_capture_error)?;
 
     let (width, height) = (img.width(), img.height());
+    let scale_factor = (width as f32 / logical_width).max(1.0);
     let pixels = img.into_raw();
 
     if is_mostly_black(&pixels) {
@@ -53,7 +57,7 @@ pub fn capture_dofus_window() -> Result<CapturedImage, CaptureError> {
         width,
         height,
         pixels,
-        scale_factor: 1.0, // refined in Task 1.4
+        scale_factor,
     })
 }
 
