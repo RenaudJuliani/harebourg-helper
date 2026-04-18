@@ -1,6 +1,7 @@
 import type { EntityKind } from '../../core/types';
 import { useAppStore } from '../../state/store';
 import { SettingsButton } from '../app/SettingsButton';
+import { DetectButton } from './DetectButton';
 import { EntityPalette } from './EntityPalette';
 
 type Props = {
@@ -26,6 +27,7 @@ export function RightPanel({ paletteKind, onPaletteChange }: Props) {
     >
       {mode === 'combat' ? (
         <>
+          <DetectButton />
           <EntityPalette selected={paletteKind} onSelect={onPaletteChange} />
           <button type="button" onClick={resetTurn}>
             Reset tour
