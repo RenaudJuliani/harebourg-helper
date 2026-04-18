@@ -1,18 +1,24 @@
 import type { StateCreator } from 'zustand';
 import { canPlaceEntity } from '../../core/placement';
-import type { Cell, Entity, EntityKind, GameMap } from '../../core/types';
+import type { Cell, DetectedEntity, Entity, EntityKind, GameMap } from '../../core/types';
 
 export type EntitySlice = {
   entities: Entity[];
   placeEntity: (kind: EntityKind, cell: Cell) => void;
   removeEntity: (id: string) => void;
   clearAllEntities: () => void;
+  entitiesReplaced: (detected: DetectedEntity[]) => void;
 };
 
 const UNIQUE: ReadonlySet<EntityKind> = new Set(['me', 'harebourg']);
 
 let counter = 0;
 const nextId = () => `e${++counter}`;
+
+const detectedKindToEntityKind = (detected: DetectedEntity): EntityKind => {
+  if (detected.kind === 'harebourg') return 'harebourg';
+  return detected.team === 'ally' ? 'ally' : 'enemy';
+};
 
 type Requires = { map: GameMap };
 
@@ -31,4 +37,12 @@ export const createEntitySlice: StateCreator<EntitySlice & Requires, [], [], Ent
     }),
   removeEntity: (id) => set((state) => ({ entities: state.entities.filter((e) => e.id !== id) })),
   clearAllEntities: () => set({ entities: [] }),
+  entitiesReplaced: (detected) =>
+    set(() => ({
+      entities: detected.map((d) => ({
+        id: nextId(),
+        kind: detectedKindToEntityKind(d),
+        cell: d.cell,
+      })),
+    })),
 });

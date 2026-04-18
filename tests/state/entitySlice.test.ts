@@ -61,4 +61,22 @@ describe('entitySlice', () => {
     s.getState().removeEntity(id);
     expect(s.getState().entities).toEqual([]);
   });
+
+  it('entitiesReplaced wipes existing and inserts detected entities', () => {
+    const s = makeStore();
+    s.getState().placeEntity('me', { x: 8, y: 5 });
+    s.getState().placeEntity('ally', { x: 9, y: 5 });
+    expect(s.getState().entities).toHaveLength(2);
+
+    s.getState().entitiesReplaced([
+      { cell: { x: 10, y: 5 }, team: 'enemy', kind: 'harebourg', confidence: 0.9 },
+      { cell: { x: 11, y: 5 }, team: 'enemy', kind: 'generic', confidence: 0.8 },
+      { cell: { x: 7, y: 5 }, team: 'ally', kind: 'generic', confidence: 0.85 },
+    ]);
+
+    const entities = s.getState().entities;
+    expect(entities).toHaveLength(3);
+    expect(entities.map((e) => e.kind)).toEqual(['harebourg', 'enemy', 'ally']);
+    expect(entities.some((e) => e.kind === 'me')).toBe(false);
+  });
 });
