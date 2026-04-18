@@ -20,6 +20,8 @@ export function MapLayer({ onCellClick, onCellRightClick, onCellMiddleClick, onC
           key={`${x},${y}`}
           px={px}
           py={py}
+          x={x}
+          y={y}
           kind={map.cells[y][x]}
           onClick={(e) => onCellClick({ x, y }, e)}
           onContextMenu={(e) => {
