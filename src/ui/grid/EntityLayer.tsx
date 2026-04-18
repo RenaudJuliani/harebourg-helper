@@ -8,14 +8,12 @@ function colorFor(kind: EntityKind): string {
   switch (kind) {
     case 'me':
       return theme.me;
-    case 'meStart':
-      return theme.me;
     case 'harebourg':
       return theme.harebourg;
     case 'ally':
       return theme.ally;
-    case 'neutral':
-      return theme.neutral;
+    case 'enemy':
+      return theme.enemy;
   }
 }
 
@@ -23,14 +21,12 @@ function labelFor(kind: EntityKind): string {
   switch (kind) {
     case 'me':
       return 'M';
-    case 'meStart':
-      return 'S';
     case 'harebourg':
       return 'H';
     case 'ally':
       return 'A';
-    case 'neutral':
-      return 'N';
+    case 'enemy':
+      return 'E';
   }
 }
 
@@ -42,7 +38,7 @@ function diamond(px: number, py: number): string {
 
 const CellMarker = memo(function CellMarker({ entity }: { entity: Entity }) {
   const { px, py } = cartesianToIso(entity.cell);
-  const opacity = entity.kind === 'meStart' ? 0.35 : 0.85;
+  const opacity = 0.85;
   return (
     <g pointerEvents="none">
       <polygon
@@ -95,7 +91,7 @@ export function EntityLayer() {
   return (
     <g>
       {entities.map((e) =>
-        e.kind === 'me' || e.kind === 'meStart' ? (
+        e.kind === 'me' ? (
           <CellMarker key={e.id} entity={e} />
         ) : (
           <CircleMarker key={e.id} entity={e} />

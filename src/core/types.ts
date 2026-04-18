@@ -10,7 +10,7 @@ export type GameMap = {
   cells: CellKind[][]; // [y][x]
 };
 
-export type EntityKind = 'me' | 'meStart' | 'harebourg' | 'ally' | 'neutral';
+export type EntityKind = 'me' | 'ally' | 'harebourg' | 'enemy';
 
 export type Entity = {
   id: string;

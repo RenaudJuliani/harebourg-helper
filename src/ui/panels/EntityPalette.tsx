@@ -8,7 +8,7 @@ type Props = {
 const PALETTE: Array<{ kind: EntityKind; label: string }> = [
   { kind: 'harebourg', label: 'Comte Harebourg' },
   { kind: 'ally', label: 'Allié' },
-  { kind: 'neutral', label: 'Neutre' },
+  { kind: 'enemy', label: 'Ennemi' },
 ];
 
 export function EntityPalette({ selected, onSelect }: Props) {

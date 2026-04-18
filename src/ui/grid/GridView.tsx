@@ -38,8 +38,6 @@ export function GridView({ paletteKind }: Props) {
       setCellKind(cell, current === 'obstacle' ? 'floor' : 'obstacle');
     } else if (e.altKey) {
       placeEntity(paletteKind, cell);
-    } else if (e.shiftKey) {
-      placeEntity('meStart', cell);
     } else {
       placeEntity('me', cell);
     }

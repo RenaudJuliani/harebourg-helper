@@ -7,9 +7,6 @@ import type { AppStore } from './store';
 export const selectMe = (s: AppStore): Entity | undefined =>
   s.entities.find((e) => e.kind === 'me');
 
-export const selectMeStart = (s: AppStore): Entity | undefined =>
-  s.entities.find((e) => e.kind === 'meStart');
-
 export const selectHarebourg = (s: AppStore): Entity | undefined =>
   s.entities.find((e) => e.kind === 'harebourg');
 

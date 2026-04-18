@@ -4,7 +4,6 @@ import type { AppMode } from '../../core/types';
 export type ShortcutAction =
   | 'resetTurn'
   | 'toggleMode'
-  | 'swapPositions'
   | 'cycleHpRangeDown'
   | 'incrementMeleeHits'
   | 'decrementMeleeHits';
@@ -14,7 +13,6 @@ export type ShortcutBindings = Record<ShortcutAction, string | null>;
 export const DEFAULT_SHORTCUTS: ShortcutBindings = {
   resetTurn: 'r',
   toggleMode: 'e',
-  swapPositions: 's',
   cycleHpRangeDown: 'd',
   incrementMeleeHits: 'z',
   decrementMeleeHits: 'x',

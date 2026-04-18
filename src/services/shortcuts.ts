@@ -9,16 +9,6 @@ const HANDLERS: Record<ShortcutAction, () => void> = {
     const s = useAppStore.getState();
     s.setMode(s.mode === 'combat' ? 'edit' : 'combat');
   },
-  swapPositions: () => {
-    const s = useAppStore.getState();
-    const me = s.entities.find((e) => e.kind === 'me');
-    const meStart = s.entities.find((e) => e.kind === 'meStart');
-    if (!me || !meStart) return;
-    s.removeEntity(me.id);
-    s.removeEntity(meStart.id);
-    s.placeEntity('me', meStart.cell);
-    s.placeEntity('meStart', me.cell);
-  },
   cycleHpRangeDown: () => {
     const s = useAppStore.getState();
     const idx = HP_ORDER.indexOf(s.turn.hpRange);

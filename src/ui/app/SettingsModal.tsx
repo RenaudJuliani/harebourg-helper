@@ -7,7 +7,6 @@ type Props = { open: boolean; onClose: () => void };
 const LABELS: Record<ShortcutAction, string> = {
   resetTurn: 'Reset tour',
   toggleMode: 'Toggle mode',
-  swapPositions: 'Swap start ↔ attack',
   cycleHpRangeDown: 'Cycler plage PV ↓',
   incrementMeleeHits: '+1 coup CàC',
   decrementMeleeHits: '−1 coup CàC',

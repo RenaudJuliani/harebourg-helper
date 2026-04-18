@@ -9,7 +9,7 @@ export type EntitySlice = {
   clearAllEntities: () => void;
 };
 
-const UNIQUE: ReadonlySet<EntityKind> = new Set(['me', 'meStart', 'harebourg']);
+const UNIQUE: ReadonlySet<EntityKind> = new Set(['me', 'harebourg']);
 
 let counter = 0;
 const nextId = () => `e${++counter}`;
